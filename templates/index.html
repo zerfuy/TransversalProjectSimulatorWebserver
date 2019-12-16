@@ -6,6 +6,7 @@
     <title>Quick Start - Leaflet</title>
 
     <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="10" >
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/leaflet.css' ) }}">
@@ -15,16 +16,21 @@
 </head>
 <body>
 
-<div id="mapid" style="width: 1000px; height: 700px;"></div>
+<div id="mainDiv" style="width: 1000px; height: 700px;"></div>
 <script>
 
-    var fires = JSON.parse('{{ fires}}');
+    var fires = JSON.parse('{{fires}}');
     console.log(fires);
+
+    var node = document.getElementById("mainDiv"); 
 
     fires.forEach(function(elem){
         x_pos = elem[0];
         y_pos = elem[1];
         intensity = elem[2];
+        var textnode = document.createTextNode("x : " + x_pos + ", y : " + y_pos + ", intensity : " + intensity);
+        node.appendChild(textnode);
+        node.appendChild(document.createElement("br"));
     })
 
 function decode(str, precision) {

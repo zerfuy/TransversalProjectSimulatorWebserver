@@ -12,6 +12,8 @@ from flask_mysqldb import MySQL
 import json
 import psycopg2
 import ctypes
+import serial
+import sys
 
 
 app = Flask(__name__)
@@ -58,11 +60,27 @@ def index():
     conn = psycopg2.connect(host="manny.db.elephantsql.com", database="juynhvrm", user="juynhvrm", password="H-FZ4Jrenwgd_c2Xzte7HLsYJzB_6q5D")
 
     cur = conn.cursor()
-    cur.execute('SELECT x_pos, y_pos, intensity from fire')
+    cur.execute('SELECT x_pos, y_pos, intensity from fire order by intensity desc')
     fires = cur.fetchmany(60)
     # mise en forme
     json = []
     for seq in fires:
         json.append(list(seq))
+
+    if sys.platform.startswith('win'):
+        SERIALPORT = "COM4"
+    else:
+        SERIALPORT = "/dev/ttyUSB0"
+
+    ser = serial.Serial(
+        port=SERIALPORT,
+        baudrate=115200
+    )
+
+    try:
+        ser.write((str(json) + "\n\r").replace(" ", "").replace("[[", "").replace("]]", "").replace("],[", ";").encode())
+        ser.close()
+    except serial.SerialException:
+        print("Serial {} port not available".format(SERIALPORT))
 
     return render_template('index.html', fires=json)
