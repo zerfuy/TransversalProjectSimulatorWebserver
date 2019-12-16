@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>Quick Start - Leaflet</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/leaflet.css' ) }}">
+    
+    <script type="text/javascript" src="{{ url_for('static', filename = 'js/leaflet.js') }}"></script>
+
+</head>
+<body>
+
+<div id="mapid" style="width: 1000px; height: 700px;"></div>
+<script>
+
+    var fires = JSON.parse('{{ fires}}');
+    console.log(fires);
+
+    fires.forEach(function(elem){
+        x_pos = elem[0];
+        y_pos = elem[1];
+        intensity = elem[2];
+    })
+
+function decode(str, precision) {
+    var index = 0,
+        lat = 0,
+        lng = 0,
+        coordinates = [],
+        shift = 0,
+        result = 0,
+        byte = null,
+        latitude_change,
+        longitude_change,
+        factor = Math.pow(10, precision || 5);
+
+    while (index < str.length) {
+
+        // Reset shift, result, and byte
+        byte = null;
+        shift = 0;
+        result = 0;
+
+        do {
+            byte = str.charCodeAt(index++) - 63;
+            result |= (byte & 0x1f) << shift;
+            shift += 5;
+        } while (byte >= 0x20);
+
+        latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+        shift = result = 0;
+
+        do {
+            byte = str.charCodeAt(index++) - 63;
+            result |= (byte & 0x1f) << shift;
+            shift += 5;
+        } while (byte >= 0x20);
+
+        longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+
+        lat += latitude_change;
+        lng += longitude_change;
+
+        coordinates.push([lat / factor, lng / factor]);
+    }
+
+    return coordinates;
+};
+
+</script>
+</body>
+</html>
