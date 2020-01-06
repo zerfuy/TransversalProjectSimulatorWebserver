@@ -15,7 +15,6 @@
 
 </head>
 <body>
-
 <div id="mainDiv" style="width: 1000px; height: 700px;"></div>
 <script>
 
@@ -25,15 +24,25 @@
     var node = document.getElementById("mainDiv"); 
 
     fires.forEach(function(elem){
-        x_pos = elem[0];
-        y_pos = elem[1];
-        intensity = elem[2];
-        var textnode = document.createTextNode("x : " + x_pos + ", y : " + y_pos + ", intensity : " + intensity);
+        id = elem[0];
+        intensity = elem[1];
+        var textnode = document.createTextNode(id + "," + intensity + ";");
         node.appendChild(textnode);
-        node.appendChild(document.createElement("br"));
+        //node.appendChild(document.createElement("br"));
     })
 
-function decode(str, precision) {
+    var fires = JSON.parse('{{ fires}}');
+
+    //database get all real positions
+    
+    
+    //display all fires
+    fires.forEach(function(elem){
+        L.marker([elem[0], elem[1]]).addTo(map)
+        .bindPopup("Fire")
+    });
+
+    function decode(str, precision) {
     var index = 0,
         lat = 0,
         lng = 0,

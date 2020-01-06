@@ -19,12 +19,6 @@ import sys
 app = Flask(__name__)
 app.secret_key = 'dev key'
 
-app.config['MYSQL_HOST'] = 'manny.db.elephantsql.com'
-app.config['MYSQL_USER'] = 'juynhvrm'
-app.config['MYSQL_PASSWORD'] = 'H-FZ4Jrenwgd_c2Xzte7HLsYJzB_6q5D'
-app.config['MYSQL_DB'] = 'juynhvrm'
-mysql = MySQL(app)
-
 assets = Environment(app)
 ckeditor = CKEditor(app)
 
@@ -53,22 +47,37 @@ assets.register('css_all', css)
 
 mysql = MySQL(app)
 
-
 @app.route('/')
 
 def index():
-    conn = psycopg2.connect(host="manny.db.elephantsql.com", database="juynhvrm", user="juynhvrm", password="H-FZ4Jrenwgd_c2Xzte7HLsYJzB_6q5D")
+    conn = psycopg2.connect(host="manny.db.elephantsql.com",
+        database="juynhvrm",
+        user="juynhvrm",
+        password="H-FZ4Jrenwgd_c2Xzte7HLsYJzB_6q5D")
+
+    # initialise all database info
+    fire_table = {}
+    fire_table["fire_id"] = "id"
+    fire_table["fire_intensity"] = "intensity"
+    fire_table["fire_table_name"] = "fire"
 
     cur = conn.cursor()
-    cur.execute('SELECT x_pos, y_pos, intensity from fire order by intensity desc')
+
+    # get fires info
+    cur.execute("SELECT {0}, {1} from {2} order by {3} desc".format(
+        fire_table["fire_id"],
+        fire_table["fire_intensity"],
+        fire_table["fire_table_name"],
+        fire_table["fire_intensity"]))
     fires = cur.fetchmany(60)
-    # mise en forme
+
+    # format fire info
     json = []
     for seq in fires:
         json.append(list(seq))
 
     if sys.platform.startswith('win'):
-        SERIALPORT = "COM4"
+        SERIALPORT = "COM5"
     else:
         SERIALPORT = "/dev/ttyUSB0"
 
@@ -78,9 +87,13 @@ def index():
     )
 
     try:
+        pass
         ser.write((str(json) + "\n\r").replace(" ", "").replace("[[", "").replace("]]", "").replace("],[", ";").encode())
-        ser.close()
     except serial.SerialException:
         print("Serial {} port not available".format(SERIALPORT))
 
+    ser.close()
+
     return render_template('index.html', fires=json)
+
+    #Pas de vue des feux graphique (simu n'a pas accès aux positions réelles)
