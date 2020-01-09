@@ -34,13 +34,6 @@
     var fires = JSON.parse('{{ fires}}');
 
     //database get all real positions
-    
-    
-    //display all fires
-    fires.forEach(function(elem){
-        L.marker([elem[0], elem[1]]).addTo(map)
-        .bindPopup("Fire")
-    });
 
     function decode(str, precision) {
     var index = 0,
